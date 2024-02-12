@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     $sql= "UPDATE members SET access_card_pdf_path = '$filename' WHERE member_id = $member_id";
     $conn->query($sql);
-
+    $conn->close();
 
     $_SESSION['success_message'] = 'Gym member successfully added';
     header('location: admin_dashboard.php');

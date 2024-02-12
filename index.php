@@ -14,21 +14,28 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $run->bind_param("s", $username); // One parameter is expected (the username), so "s" is correct.
     $run->execute();
 
-    $results = $run->get_result(); // It's get_result() not get_results().
+    $results = $run->get_result(); 
+
+
 
     if ($results->num_rows == 1) {
         $admin = $results->fetch_assoc();
 
         if (password_verify($password, $admin['password'])) {
             $_SESSION['admin_id'] = $admin ['admin_id'];
+
+            $conn->close();
             header('location: admin_dashboard.php');
         } else {
             $_SESSION['error'] = "Incorrect password!";
+            $conn->close();
             header('location: index.php');
             exit();
         }
     } else {
         $_SESSION['error'] = "Incorrect username!";
+
+        $conn->close();
         header('location: index.php');
         exit();
     }

@@ -61,6 +61,8 @@ if(!isset($_SESSION['admin_id'])) {
                 </select><br>
 
                 <input type="hidden" name="photo_path" id="photoPathInput">
+               
+               
                 <div id="dropzone-upload" class="dropzone"></div>
 
                 <input class="btn btn-primary mt-3" type="submit" value="Register Member">
@@ -70,8 +72,34 @@ if(!isset($_SESSION['admin_id'])) {
 </div>
 
 
+<?php $conn->close(); ?>
+
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity ="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+
+<script>
+    Dropzone.options.dropzoneUpload ={
+        url: "upload_photo.php",
+        paramName: "photo",
+        maxFilesize: 20, // MB
+        acceptedFiles: "image/*",
+        init: function() {
+            this.on("success", function (file, response ) {
+
+                const jsonResponse = JSON.parse(response);
+
+                if(jsonResponse.success) {
+
+                    document.getElementById('photoPathInput').value =jsonResponse.photo_path;
+                }else{
+
+                    console.error(jsonResponse.error);
+                }
+            });
+        }
+        };
+</script>
 
 
 </body>
