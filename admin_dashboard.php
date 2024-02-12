@@ -20,6 +20,18 @@ if(!isset($_SESSION['admin_id'])) {
 </head>
 <body>
 
+<?php if(isset($_SESSION['success_message']))  : ?>
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <?php 
+    echo $_SESSION['success_message'];
+    unset($_SESSION['success_message']);
+     ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<?php endif; ?>
+
+
+
 
 <div class="container">
     <div class="row mb-5">
@@ -29,13 +41,25 @@ if(!isset($_SESSION['admin_id'])) {
                 First Name: <input class="form-control" type="text" name="first_name"><br>
                 Last Name: <input class="form-control" type="text" name="last_name"><br>
                 Email: <input class="form-control" type ="email" name="email"><br>
-                Phone number: <input class="form-control" type ="phone_number" name="email"><br>
+                Phone number: <input class="form-control" type ="phone_number" name="phone_number"><br>
+                
+                
                 Training Plan:
                 <select class="form-control" name="training_plan_id">
                     <option value ="" disabled selected >Training Plan</option>
-                    <option value ="" >12 Session Plan</option>
-                    <option value ="" >30 Session Plan</option>
+                  
+                    <?php
+                    $sql = "SELECT * FROM training_plans";
+                    $run = $conn->query($sql);
+                    $results = $run->fetch_all(MYSQLI_ASSOC);
+
+                    foreach($results as $result) {
+                        echo "<option value='". $result['plan_id'] ."'>"  . $result['name'] . "</option>";
+                    }
+
+                    ?>
                 </select><br>
+
                 <input type="hidden" name="photo_path" id="photoPathInput">
                 <div id="dropzone-upload" class="dropzone"></div>
 
@@ -43,15 +67,12 @@ if(!isset($_SESSION['admin_id'])) {
                 </form>
 </div>
 </div>
- </div>
+</div>
 
 
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity ="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
 
 
 </body>
 </html>
-
-
-
-
-
