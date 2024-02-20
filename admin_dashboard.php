@@ -30,10 +30,169 @@ if(!isset($_SESSION['admin_id'])) {
 </div>
 <?php endif; ?>
 
-
-
-
 <div class="container">
+
+    <div class='row'>
+        <div class="col-md-12">
+            <h2>Members list</h2>
+
+            <a href="export.php?what=members" class="btn btn-success btn-sm">Export</a>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Trainer</th>
+                <th>Photo</th>
+                <th>Training plan</th>
+                <th>Access Card</th>
+                <th>Created At</th>
+                <th>Action</th>
+</tr>
+</thead>
+<tbody>
+
+
+
+<?php
+$sql ="SELECT members.*,
+training_plans.name AS training_plan_name,
+trainers.first_name AS trainer_first_name,
+trainers.last_name AS trainer_last_name
+FROM `members`
+LEFT JOIN `training_plans` ON members.training_plan_id = training_plans.plan_id
+LEFT JOIN `trainers` ON members.trainer_id = trainers.trainer_id;";
+
+
+
+$run =$conn->query($sql);
+
+$results = $run->fetch_all(MYSQLI_ASSOC);
+$select_members = $results;
+
+foreach ($results as $result) : ?>
+    
+    <tr>
+    <td><?php echo $result['first_name']; ?></td>
+    <td><?php echo $result['last_name']; ?></td>
+    <td><?php echo $result['email']; ?></td>
+    <td><?php echo $result['phone_number']; ?></td>
+    <td><?php 
+
+    if($result['trainer_first_name'])  {
+
+        echo $result['trainer_first_name'] . " " . $result['trainer_last_name'];
+    }   else {
+        echo "No trainer assigned";
+    }
+    
+    
+    ?></td>
+    <td><img style ="width: 60px;" src="<?php echo $result['photo_path']; ?>"></td>
+    <td><?php  
+    
+    
+    if($result['training_plan_name'])  {
+        echo $result['training_plan_name'];
+    }else{
+        echo "No plan";
+    }     
+    
+    ?></td>
+    <td><a target= "_blank "   href="<?php echo $result['access_card_pdf_path']; ?>">Access Card </a>      
+    <td><?php
+    $create_at= strtotime($result['created_at']); 
+    $new_date = date ("F, jS Y", $create_at);
+    echo $new_date;
+    ?></td>
+
+
+
+    <td>
+        <form action="delete_member.php" method="POST">
+    
+        <input type="hidden" name="member_id" value ="<?php echo $result['member_id']; ?> ">
+        <button type="submit">DELETE</button>
+    </form>
+
+
+
+</td>
+</tr>
+
+<?php endforeach; ?>
+
+
+</tbody>
+</table>
+
+
+
+</div>
+
+
+    <div class="com-md-12">
+    <h2>Trainers List</h2>
+
+    <a href="export.php?what=trainers" class="btn btn-success btn-sm">Export</a>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Created at</th>
+</thead>
+<tbody>
+
+
+<?php
+$sql = "SELECT * FROM trainers";
+$run = $conn->query($sql);
+$results = $run->fetch_all(MYSQLI_ASSOC);
+
+$select_trainers = $results;
+
+
+
+foreach($results as $result) : ?>
+
+
+    <tr>
+
+
+    <td> <?php echo $result['first_name']; ?> </td>
+    <td> <?php echo $result['last_name']; ?> </td>
+    <td> <?php echo $result['email']; ?> </td>
+    <td> <?php echo $result['phone_number']; ?> </td>
+    <td> <?php echo date("F, jS, Y", strtotime($result['created_at'])); ?> </td>
+
+
+    </tr>
+
+
+<?php endforeach; ?>
+
+
+
+
+
+
+                </tbody>
+            </table>
+         </div>
+    </div>
+
+
+ 
+
+
+
     <div class="row mb-5">
         <div class="col-md-6">
             <h2>Register member</h2>
@@ -68,6 +227,52 @@ if(!isset($_SESSION['admin_id'])) {
                 <input class="btn btn-primary mt-3" type="submit" value="Register Member">
                 </form>
 </div>
+
+  <div class="col-md-6">
+        <h2>Register Trainer</h2>
+        <form action="register_trainer.php" method="post">
+            First Name: <input class="form-control" type="text" name="first_name"><br>
+            Last Name: <input class="form-control" type="text" name="last_name"><br>
+            Email: <input class="form-control" type="email" name="email"><br>
+            Phone number: <input class="form-control" type="text" name="phone_number"><br>
+            <input class= "btn btn-primary" type="submit" value ="Register Trainer">
+        </form>        
+</div>
+</div>
+
+
+<div class="row"></div>
+        <div class ="col-md-6">
+                    <h2>Assign Trainer to Member</h2>
+                <form action="assign_trainer.php" method="POST">
+                        <label for="">Select Member</label>
+                    <select name="member" class="form-select">
+                        <?php foreach($select_members as $member)  : ?>
+
+                   <option value ="<?php echo $member['member_id'] ?>">
+                        <?php echo $member['first_name'] . " " . $member['last_name']; ?>
+                    </option>
+                <?php endforeach;?>
+
+                
+                </select>
+
+                <label for="">Select Trainer</label>
+                    <select name="trainer" class="form-select">
+                    <?php foreach($select_trainers as $trainer)  : ?>
+
+            <option value ="<?php echo $trainer['trainer_id'] ?>">
+            <?php echo $trainer['first_name'] . " " . $trainer['last_name']; ?>
+            </option>
+            <?php endforeach;?>
+                </select>
+
+
+                <button type="submit" class="btn btn-primary">Assign Trainer</button>
+
+                </form>
+            </div>
+
 </div>
 </div>
 
