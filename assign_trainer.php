@@ -20,6 +20,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
     header("Location: admin_dashboard.php");
     exit();
+    
 
 
 
